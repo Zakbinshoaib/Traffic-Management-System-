@@ -1,0 +1,194 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+struct Challan {
+    string vehicleType;
+    string vehiclenum;
+    string violationType;
+    int fine;
+};
+
+Challan challans[100];
+int challanCount = 0;
+
+Challan generateChallan(int vehicleType, int violationType, const string& vehiclenum) {
+    int fine = 0;
+    string vehicleTypeStr, violationTypeStr;
+
+    switch (vehicleType) {
+    case 1: vehicleTypeStr = "Car"; break;
+    case 2: vehicleTypeStr = "Bike"; break;
+    case 3: vehicleTypeStr = "Truck"; break;
+    default: vehicleTypeStr = "Unknown"; break;
+    }
+
+    switch (violationType) {
+    case 1: violationTypeStr = "Speeding"; break;
+    case 2: violationTypeStr = "Wrong Parking"; break;
+    default: violationTypeStr = "Other"; break;
+    }
+
+    if (violationType == 1) {
+        if (vehicleType == 1) { fine = 100; }
+        else if (vehicleType == 2) { fine = 50; }
+        else if (vehicleType == 3) { fine = 150; }
+    }
+    else if (violationType == 2) {
+        fine = 75;
+    }
+    else {
+        fine = 50;
+    }
+
+    return { vehicleTypeStr, vehiclenum, violationTypeStr, fine };
+}
+
+void challanManagement() {
+    string adminPassword = "admin123";
+
+    cout << "Are you a (1) Client or (2) Admin? Enter your choice: ";
+    int userType;
+    cin >> userType;
+    while (userType != 1 && userType != 2) {
+        cout << "Invalid input. Please enter 1 for Client or 2 for Admin: ";
+        cin >> userType;
+    }
+
+    if (userType == 2) {
+        cout << "Enter admin password: ";
+        string password;
+        cin >> password;
+
+        if (password == adminPassword) {
+            cout << "Admin access granted.\n";
+            char addMore;
+            do {
+                int vehicleType, violationType;
+                string vehiclenum;
+
+                cout << "\nEnter the vehicle type (1. Car / 2. Bike / 3. Truck): ";
+                cin >> vehicleType;
+                cout << "Enter the violation type (1. Speeding / 2. Wrong Parking): ";
+                cin >> violationType;
+                cout << "Enter Vehicle number: ";
+                cin >> vehiclenum;
+
+                if (challanCount < 100) {
+                    challans[challanCount] = generateChallan(vehicleType, violationType, vehiclenum);
+
+                    cout << "\nChallan Generated: Vehicle: " << challans[challanCount].vehicleType
+                        << ", Violation: " << challans[challanCount].violationType
+                        << ", Vehicle Number: " << challans[challanCount].vehiclenum
+                        << ", Fine: $" << challans[challanCount].fine << "\n";
+
+                    challanCount++;
+                }
+                else {
+                    cout << "\nChallan storage is full. Cannot add more violations. Consider increasing storage size or clearing old challans.\n";
+                }
+
+                cout << "Do you want to add more violations? (y/n): ";
+                cin >> addMore;
+            } while (addMore == 'y' || addMore == 'Y');
+        }
+        else {
+            cout << "Incorrect password. Access denied.\n";
+        }
+    }
+    else if (userType == 1) {
+        string searchVehiclenum;
+        cout << "Enter your vehicle number to check for violations: ";
+        cin >> searchVehiclenum;
+
+        bool found = false;
+        for (int i = 0; i < challanCount; ++i) {
+            if (challans[i].vehiclenum == searchVehiclenum) {
+                cout << "\nChallan Found: Vehicle: " << challans[i].vehicleType
+                    << ", Violation: " << challans[i].violationType
+                    << ", Fine: $" << challans[i].fine << "\n";
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            cout << "No challan found for the provided vehicle number.\n";
+        }
+    }
+    else {
+        cout << "Invalid choice. Returning to main menu.\n";
+    }
+}
+
+void delay() {
+    for (int i = 0; i < 300000000; i++);
+}
+
+void simulateTrafficLight() {
+    int numJunctions;
+    cout << "Enter the number of traffic junctions (minimum 3): ";
+    cin >> numJunctions;
+
+    while (numJunctions < 3) {
+        cout << "Please enter at least 3 junctions: ";
+        cin >> numJunctions;
+    }
+
+    cout << "\nTraffic Junctions: " << numJunctions << "\n";
+
+    char op_for_light;
+
+    for (int junction = 1; junction <= numJunctions; ++junction) {
+        cout << "Junction " << junction << " - RED Light\n";
+        for (int i = 8; i > 0; --i) {
+            cout << i << " seconds remaining\n";
+            delay();
+        }
+
+        cout << "Junction " << junction << " - YELLOW Light\n";
+        for (int i = 3; i > 0; --i) {
+            cout << i << " seconds remaining\n";
+            delay();
+        }
+
+        cout << "Junction " << junction << " - GREEN Light\n";
+        for (int i = 6; i > 0; --i) {
+            cout << i << " seconds remaining\n";
+            delay();
+        }
+    }
+
+    cout << "Do you want to run the simulation again (y/n)? ";
+    cin >> op_for_light;
+    if (op_for_light == 'y' || op_for_light == 'Y') {
+        simulateTrafficLight();
+    }
+}
+
+int main() {
+    cout << " --------------------------\n";
+    cout << "| TRAFFIC MANAGEMENT SYSTEM | \n";
+    cout << " --------------------------\n";
+    int option = 0;
+    while (option != 3) {
+        cout << "Enter the option\n1. Traffic Violation\n2. Traffic Lighting\n3. Exit: ";
+        cin >> option;
+
+        if (option > 3 || option < 1) {
+            cout << "Invalid option, Enter again: ";
+            cin >> option;
+        }
+        else if (option == 2) {
+            simulateTrafficLight();
+        }
+        else if (option == 1) {
+            challanManagement();
+        }
+    }
+
+    cout << "Thank you\n";
+    return 0;
+}
+\
